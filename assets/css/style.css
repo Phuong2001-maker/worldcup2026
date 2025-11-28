@@ -29,7 +29,7 @@ a {
 
 a:hover,
 a:focus {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .visually-hidden {
@@ -122,18 +122,49 @@ a:focus {
 }
 
 .nav-links a {
+  position: relative;
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   opacity: 0.8;
-  padding-bottom: 0.1rem;
-  border-bottom: 2px solid transparent;
+  padding-bottom: 0.15rem;
+  transition: opacity 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #0ea5e9, #31e981, #facc15);
+  background-size: 200% 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease, background-position 0.4s ease;
 }
 
 .nav-links a.active,
 .nav-links a:hover {
   opacity: 1;
-  border-color: #31e981;
+}
+
+.nav-links a:hover,
+.nav-links a:focus {
+  text-decoration: none;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  transform: scaleX(1);
+  background-position: 100% 0;
+}
+
+.nav-links a.active::after {
+  animation: navPulse 1.8s ease-in-out infinite alternate;
 }
 
 .nav-toggle {
@@ -143,6 +174,7 @@ a:focus {
   background: transparent;
   border: none;
   padding: 0;
+  cursor: pointer;
 }
 
 .nav-toggle span {
@@ -150,6 +182,21 @@ a:focus {
   height: 2px;
   background: #f5f5f7;
   border-radius: 999px;
+  transition: transform 0.2s ease, opacity 0.2s ease, width 0.2s ease;
+}
+
+.nav-toggle.active span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+  width: 22px;
+}
+
+.nav-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle.active span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+  width: 22px;
 }
 
 /* ====== HERO ====== */
@@ -260,9 +307,28 @@ a:focus {
 .countdown {
   margin-top: 1.5rem;
   border-radius: 20px;
-  background: rgba(15, 23, 42, 0.9);
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.25), transparent 45%),
+              radial-gradient(circle at 85% 30%, rgba(49, 233, 129, 0.2), transparent 55%),
+              rgba(5, 6, 11, 0.9);
   padding: 1rem 1.25rem;
-  border: 1px solid rgba(148, 163, 184, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.65);
+}
+
+.countdown::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(49, 233, 129, 0.8), rgba(14, 165, 233, 0.8), rgba(99, 102, 241, 0.8));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderGlow 6s linear infinite;
+  pointer-events: none;
 }
 
 .countdown h2 {
@@ -281,14 +347,36 @@ a:focus {
   text-align: center;
   padding: 0.4rem 0.2rem;
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.countdown-grid div::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(120deg, rgba(15, 118, 110, 0.4), rgba(14, 165, 233, 0.4), rgba(49, 233, 129, 0.35));
+  opacity: 0;
+  transform: translateY(20%);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  z-index: 0;
+}
+
+.countdown-grid div:hover::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .countdown-grid span {
   display: block;
   font-size: 1.2rem;
   font-weight: 700;
+  z-index: 1;
+  position: relative;
+  animation: digitPulse 3s ease-in-out infinite;
 }
 
 .countdown-grid small {
@@ -652,6 +740,46 @@ section {
 
 .site-footer nav a:hover {
   opacity: 1;
+}
+
+
+@keyframes navPulse {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes digitPulse {
+  0% {
+    text-shadow: 0 0 0 rgba(49, 233, 129, 0);
+    color: #f5f5f7;
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(49, 233, 129, 0.4);
+    color: #31e981;
+  }
+  100% {
+    text-shadow: 0 0 0 rgba(49, 233, 129, 0);
+    color: #f5f5f7;
+  }
+}
+
+@keyframes borderGlow {
+  0% {
+    opacity: 0.45;
+    filter: blur(0px);
+  }
+  50% {
+    opacity: 0.9;
+    filter: blur(0.5px);
+  }
+  100% {
+    opacity: 0.45;
+    filter: blur(0px);
+  }
 }
 
 /* ====== RESPONSIVE ====== */
